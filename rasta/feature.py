@@ -12,12 +12,8 @@ def rastaplp(x, fs = 8000, window_time = 0.025, hop_time = 0.010, dorasta = True
     # TODO : Need to be fixed compuation process
     # first compute power spectrum
     pspectrum, logE = rasta_utils.powspec(x, fs = fs, winlen_in_sec = window_time, hoplen_in_sec = hop_time)
-    # p_spectrum, _ = rasta_utils.powspec(x, fs, window_time, hop_time)
-    # print("pow spec:", pspectrum.shape)
     # next group to critical bands
     aspectrum, _ = rasta_utils.audspec(pspectrum, fs = fs, min_freq = 0, max_freq = fs/2)
-    # print("aud spec:", aspectrum.shape)
-    # aspectrum = rasta_utils.audspec(p_spectrum, fs)
     nbands = aspectrum.shape[0]
 
     if dorasta:
@@ -28,16 +24,12 @@ def rastaplp(x, fs = 8000, window_time = 0.025, hop_time = 0.010, dorasta = True
         # do inverse log
         aspectrum = np.exp(ras_nl_aspectrum)
 
-    # print("aud spec: (rasta)", aspectrum.shape)
     postspectrum = rasta_utils.postaud(aspectrum.T, fmax = fs/2)
-    # print("post spec: ", postspectrum.shape)
-    # postspectrum, _ = rasta_utils.postaud(aspectrum, fs/2)
+
 
     lpcas = rasta_utils.dolpc(postspectrum.T, modelorder)
     cepstra = rasta_utils.lpc2cep(lpcas, nout = modelorder+1)
-    # print("lpcas: ", lpcas.shape)
-    # print("cepstra: ", cepstra.shape)
-    # cepstra = cepstra.T
+
     if modelorder > 0:
         lpcas = rasta_utils.dolpc(postspectrum.T, modelorder)
         cepstra = rasta_utils.lpc2cep(lpcas, modelorder + 1)
@@ -46,43 +38,8 @@ def rastaplp(x, fs = 8000, window_time = 0.025, hop_time = 0.010, dorasta = True
         cepstra = rasta_utils.spec2cep(spectra)
 
     cepstra = rasta_utils.lifter(cepstra, 0.6).T
-    # print("cepstra: ", cepstra.shape)
 
     return cepstra
-"""
-def rastaplp(x, fs = 8000, win_time = 0.025, hop_time = 0.010, dorasta = True, modelorder = 8):
-    # TODO : Need to be fixed compuation process
-    # first compute power spectrum
-    p_spectrum, _ = rasta_utils.powspec(x, fs, win_time, hop_time)
-    # next group to critical bands
-    aspectrum = rasta_utils.audspec(p_spectrum, fs)
-    nbands = aspectrum.shape[0]
-
-    if dorasta:
-        # put in log domain
-        nl_aspectrum = np.log(aspectrum)
-        # next do rasta filtering
-        ras_nl_aspectrum = rasta_utils.rastafilt(nl_aspectrum)
-        # do inverse log
-        aspectrum = np.exp(ras_nl_aspectrum)
-
-    postspectrum, _ = rasta_utils.postaud(aspectrum, fs / 2)
-
-    lpcas = rasta_utils.dolpc(postspectrum, modelorder)
-    cepstra = rasta_utils.lpc2cep(lpcas, modelorder + 1)
-
-    if modelorder > 0:
-        lpcas = rasta_utils.dolpc(postspectrum, modelorder)
-        cepstra = rasta_utils.lpc2cep(lpcas, modelorder + 1)
-        spectra,F,M = rasta_utils.lpc2spec(lpcas, nbands)
-    else:
-        spectra = postspectrum
-        cepstra = rasta_utils.spec2cep(spectra)
-
-    cepstra = rasta_utils.lifter(cepstra, 0.6)
-
-    return cepstra
-"""
 
 def melfcc(x, fs = 16000, min_freq = 50, max_freq = 6500, n_mfcc = 13, n_bands = 40, lifterexp = 0.6,
           fbtype = 'fcmel', dcttype = 1, usecmp = False, window_time = 0.025, hop_time = 0.010,

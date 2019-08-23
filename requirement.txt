@@ -1,0 +1,5 @@
+numpy
+scipy
+spectrum
+librosa==0.5.1
+joblib==0.11.0

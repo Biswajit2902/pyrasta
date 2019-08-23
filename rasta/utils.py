@@ -92,31 +92,7 @@ def powspec(x, fs = 8000,
     nfft = int(np.power(2, np.ceil(np.log2(winlen_in_sec * fs))))
 
     specgm,f,t = specgram(x, nfft=nfft, fs=fs, overlap = win_length-hop_length, window=np.hamming(win_length))
-    """
-    import oct2py
-    oc = oct2py.Oct2Py()
-    oc.eval('pkg load signal')
-    specgm  = oc.specgram(x, nfft, fs, nfft, win_length-hop_length)
-    compute short-time FT
-    specgm = librosa.stft(
-        np.multiply(32768, x),
-        n_fft = nfft, hop_length = hop_length,
-        win_length = win_length, window='hann',
-        center = False
-        )
-    f, t, specgm = sp.signal.spectrogram(
-        x, fs, nfft = nfft, window='hanning',
-        noverlap=win_length-hop_length, mode='complex', scaling='density')
-    specgm = np.abs(specgram)
-    specgm = librosa.stft(
-        x,
-        n_fft = nfft, hop_length = hop_length,
-        win_length = win_length, window='hann',
-        center = False
-        )
-    specgm, f, t = specgram(x, NFFT=nfft, Fs=fs, detrend=None,
-        window=None, noverlap=win_length-hop_length, pad_to=None, sides=None, scale_by_freq=None, mode="complex")
-    """
+
     pow_spec = np.power(np.abs(specgm), 2)
     if dither:
         pow_spec = np.add(pow_spec, win_length)
